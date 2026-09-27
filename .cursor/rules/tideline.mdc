@@ -1,0 +1,63 @@
+---
+description: Tide Line non-negotiable privacy, security, and tech-stack rules
+alwaysApply: true
+---
+
+# Tide Line
+
+Free Gotham Whale app. Kids (7–14) follow New York humpback whales. Adults use Observer mode. One phase at a time; do not start the next phase until the user replies "continue."
+
+## Children's privacy (COPPA)
+
+- Children never create accounts or enter email. A verified parent or teacher owns each child profile.
+- Child profiles store only a picker nickname (no free text), avatar, age band, and progress. No real names, photos of kids, or contact info.
+- No chat, comments, or free-text input from children.
+- No ads. No third-party analytics, crash reporters, or SDKs that collect device IDs or advertising IDs.
+- Never store a child's precise location. Location checks stay on-device; save only quest id + date.
+
+```ts
+// BAD — child's coordinates must never be stored or sent
+await supabase.from("quest_completions").insert({ child_id, lat, lng });
+
+// GOOD
+await supabase.from("quest_completions").insert({ child_id, quest_id, completed_on });
+```
+
+- Every table has Row Level Security. Adults access only their own children. Teachers access only their own classes.
+- Kids' notifications go through the parent or teacher device, worded for kids.
+
+## Adults (Observer mode)
+
+- Precise location and photo metadata only after explicit consent.
+- Public map locations are rounded to 2 decimal places.
+
+## Wildlife safety
+
+- Never award points for proximity to animals.
+- Copy must say to stay at least 100 yards from whales and to go to the water with a grown-up.
+
+## Environment and security
+
+- GitHub, Vercel, and Supabase. Two Supabase projects: DEV and PRODUCTION.
+- Migrations run against DEV only unless the user explicitly types "production."
+- Every schema change is a file in `supabase/migrations/`.
+- Never hardcode keys. Read environment variables. `.env*` is gitignored. `.env.example` has placeholder names only.
+- Never use the Supabase service role key in client code. The app uses only the public anon key.
+- Expo EAS builds the mobile app. Vercel hosts only web routes (teacher dashboard, science review, public map, donation pages).
+
+## Style
+
+- Warm, curious language at about a grade 3 reading level.
+- Minimum 48px tap targets, high contrast, dynamic text size, and respect "reduce motion."
+- Works offline where reasonable (cached tales, cached whale cards, queued submissions).
+
+## Tech stack
+
+- Expo (React Native) + TypeScript strict + Expo Router
+- Supabase: Postgres, Auth, Storage, Row Level Security, PostGIS
+- Zustand for local state
+- react-native-reanimated, lottie-react-native, rive-react-native, expo-haptics, expo-av, expo-speech, expo-location, expo-notifications, expo-image-picker
+- Jest + React Native Testing Library; pgTAP for database tests
+- Vercel for web routes; EAS for mobile builds
+
+Before adding a package, say what it is, why it is needed, and confirm it does not collect device identifiers or send data to third parties.

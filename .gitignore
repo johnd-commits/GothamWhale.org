@@ -1,0 +1,35 @@
+# Dependencies
+node_modules/
+
+# Environment and secrets. Keep the placeholder template.
+.env*
+!.env.example
+
+# Expo
+.expo/
+dist/
+web-build/
+expo-env.d.ts
+
+# Native build artifacts
+ios/
+android/
+*.jks
+*.p8
+*.p12
+*.key
+*.mobileprovision
+*.orig.*
+
+# Other build output
+build/
+.vercel/
+*.tsbuildinfo
+
+# Supabase local scratch
+supabase/.temp/
+
+# Logs
+npm-debug.*
+yarn-debug.*
+yarn-error.*
