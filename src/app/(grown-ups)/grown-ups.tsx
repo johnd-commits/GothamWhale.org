@@ -60,6 +60,7 @@ export default function GrownUpsScreen() {
             }
           />
         ))}
+        <BigLink href="/catalog" label="Whale catalog" />
         <BigLink href="/observer" label="Observer mode" />
         <BigLink href="/dev" label="Component preview" />
         {Platform.OS === 'web' ? <BigLink href="/teacher" label="Teacher desk" /> : null}

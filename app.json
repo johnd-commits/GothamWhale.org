@@ -38,6 +38,12 @@
         {
           "locationWhenInUsePermission": "A grown-up can allow a quest check. Tide Line does not save where a child is."
         }
+      ],
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "A grown-up can choose a whale tail photo for the catalog. The photo stays on this device."
+        }
       ]
     ],
     "experiments": {
