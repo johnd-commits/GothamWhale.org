@@ -17,7 +17,9 @@ export default function SignUpScreen() {
 
   async function createAccount() {
     if (!auth) {
-      setMessage('This app is not connected to the whale notebook yet.');
+      setMessage(
+        'This website has no database connection yet. Add the public Supabase address and anon key in Vercel, then publish again.',
+      );
       return;
     }
     const result = await registerAdult(auth, { email, password, acceptedNotice: true });
@@ -38,7 +40,9 @@ export default function SignUpScreen() {
 
   async function signIn() {
     if (!auth) {
-      setMessage('This app is not connected to the whale notebook yet.');
+      setMessage(
+        'This website has no database connection yet. Add the public Supabase address and anon key in Vercel, then publish again.',
+      );
       return;
     }
     const result = await signInAdult(auth, { email, password, acceptedNotice: true });

@@ -1,5 +1,6 @@
 import { Stack } from 'expo-router';
 import { useState } from 'react';
+import { StyleSheet, Text } from 'react-native';
 
 import { ChoiceList } from '@/components/choice-list';
 import { InfoScreen } from '@/components/info-screen';
@@ -9,6 +10,7 @@ import { ageBands, avatars, nicknames } from '@/lib/child-options';
 import { createSupabaseAdultAuth } from '@/lib/supabase-adult-auth';
 import { getSupabaseClient } from '@/lib/supabase';
 import { useProfileVersion } from '@/lib/use-family';
+import { colors, font } from '@/theme/tokens';
 
 export default function AddChildScreen() {
   const [nickname, setNickname] = useState<string | null>(null);
@@ -20,7 +22,9 @@ export default function AddChildScreen() {
     const auth = createSupabaseAdultAuth();
     const client = getSupabaseClient();
     if (!auth || !client) {
-      setMessage('This app is not connected to the whale notebook yet.');
+      setMessage(
+        'Save did not keep this profile. This website has no database connection yet. Add the public Supabase address and anon key in Vercel, then publish again.',
+      );
       return;
     }
     const { data } = await client.auth.getSession();
@@ -49,8 +53,17 @@ export default function AddChildScreen() {
         <ChoiceList label="Nickname" options={nicknames} value={nickname} onChange={setNickname} />
         <ChoiceList label="Avatar" options={avatars} value={avatar} onChange={setAvatar} />
         <ChoiceList label="Age band" options={ageBands} value={ageBand} onChange={setAgeBand} />
+        <Text style={styles.result}>{message}</Text>
         <SquishButton label="Save this profile" onPress={() => void saveProfile()} />
       </InfoScreen>
     </>
   );
 }
+
+const styles = StyleSheet.create({
+  result: {
+    color: colors.ink,
+    fontFamily: font.semibold,
+    fontSize: 18,
+  },
+});
