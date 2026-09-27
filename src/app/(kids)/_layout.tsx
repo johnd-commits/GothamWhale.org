@@ -25,6 +25,7 @@ export default function KidsLayout() {
           options={{ title: tab.title }}
         />
       ))}
+      <Tabs.Screen name="whale/[id]" options={{ href: null, title: 'Whale' }} />
     </Tabs>
   );
 }

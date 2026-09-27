@@ -1,5 +1,55 @@
 # Tide Line progress
 
+## Phases 5 through 15 - Play, observer, web, and release notes
+
+Status: complete on branch `phase-05-rest`.
+
+### Built
+
+- My Whale lists sample cards when the catalog is empty, follows a whale once, caches cards, and can read a tale aloud on the device.
+- A whale card opens a detail screen that is not a tab. The map uses rounded sample spots until a research-grade row exists.
+- Play matches one tail against three or four choices, shows the mascot hint, and raises difficulty with a streak. A careful-matcher flag stays off the kid badge shelf.
+- Harbor quests check a circle on the device only after a grown-up allows location. The save is a quest id and a date. An at-home quest needs no location.
+- Calm offers a one-minute breath, a two-minute song, and a three-minute noticing exercise. Only the minutes are saved.
+- Badges use the event rules, including a top-explorer flag after seven days and five badges.
+- Observer mode is behind the PIN. It checks the date, photo time, harbor water, and duplicates, then queues the adult report on the device. Staying 100 yards away is a separate note. No points are given for being close.
+- The website map shows rounded spots. Science review exports Darwin Core from the public view. The teacher desk shows this device's progress. Adopt a Whale pledges through a placeholder and lists the app-store payment questions.
+- `PRIVACY_AUDIT.md`, `STORE_LISTINGS.md`, `DEPLOY.md`, and `eas.json` are in the repo.
+
+### Packages
+
+- `expo-speech` speaks with the device voice. This app does not send the tale to a speech server.
+- `expo-location` reads a foreground position for a quest circle. It does not save the child's coordinates and it does not phone home with them.
+
+### Files changed
+
+- `src/app/(kids)`, `src/app/(observer)`, `src/app/(web)`, `src/app/(grown-ups)/grown-ups.tsx`
+- `src/lib/harbor.ts`, `src/lib/fluke-match.ts`, `src/lib/ocean-minutes.ts`, `src/lib/quests.ts`, `src/lib/badges.ts`, `src/lib/sighting-checks.ts`, `src/lib/darwin-core.ts`, `src/lib/payments.ts`, `src/lib/play-progress.ts`, `src/lib/location-preference.ts`, `src/lib/sighting-queue.ts`
+- `src/components/adult-gate.tsx`, `src/components/sighting-map.tsx`
+- `PRIVACY_AUDIT.md`, `STORE_LISTINGS.md`, `DEPLOY.md`, `eas.json`, `README.md`, `app.json`
+
+### Checks
+
+- tsc: pass
+- expo lint: pass
+- expo-doctor: 21/21 pass
+- tests: 31 passed
+- export: iOS, Android, and web bundles created, then `dist/` deleted
+- database: schema unchanged
+
+### Known issues
+
+- EAS is not logged in on this machine, so a preview phone build was not started.
+- The Supabase CLI is not logged in here, so hosted advisors were not pulled. The privacy audit lists that gap.
+- Sample catalog rows are still not loaded in production. Empty tables fall back to sample cards.
+- The consent step and the payment step are still placeholders.
+- The grown-up PIN is an unsalted hash of four digits on the device.
+- `gh` is not installed, so this branch was not opened as a pull request from this shell.
+
+### Next
+
+No further phase in the master plan. Vercel still deploys `main`. This work is on `phase-05-rest`.
+
 ## Phase 4 - Adult sign-up, consent, and child profiles
 
 Status: checkpoint posted. Waiting for "continue".

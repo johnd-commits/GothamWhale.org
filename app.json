@@ -32,7 +32,13 @@
       ],
       "expo-audio",
       "expo-font",
-      "expo-asset"
+      "expo-asset",
+      [
+        "expo-location",
+        {
+          "locationWhenInUsePermission": "A grown-up can allow a quest check. Tide Line does not save where a child is."
+        }
+      ]
     ],
     "experiments": {
       "reactCompiler": true
