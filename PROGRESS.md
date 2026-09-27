@@ -1,8 +1,48 @@
 # Tide Line progress
 
-## Phase 2 - Design system and juice
+## Phase 3 - Database schema and security
 
 Status: checkpoint posted. Waiting for "continue".
+
+### Built
+
+- Tables for adults, children, whales, flukes, sightings, follows, badges, quests, tales, ocean dex, classes, and adoptions.
+- Row level security on every table. A public sightings view rounds coordinates to 2 decimals.
+- pgTAP tests for cross-family access, child location columns, and verification updates.
+- Sample seed for a local reset. It is not part of the migration.
+
+### Files changed
+
+- `supabase/migrations/20260927150000_tide_line_schema.sql`
+- `supabase/seed.sql`
+- `supabase/tests/rls_and_privacy.sql`
+- `supabase/config.toml`
+- `src/lib/__tests__/schema.test.ts`
+- `README.md`, `PROGRESS.md`
+
+### Checks
+
+- tsc: pass
+- expo lint: pass
+- expo-doctor: 21/21 pass
+- tests: 12 passed
+- export: iOS, Android, and web bundles created, then dist/ deleted
+- database: production apply is blocked until the Supabase CLI has an access token
+
+### Known issues
+
+- This shell cannot open the Supabase browser login, and no access token is set, so the migration is not on the production database yet.
+- Docker is not installed, so local `supabase db reset` cannot run the pgTAP file.
+- Scientist and admin roles cannot be chosen at signup. Those rows are created by the database owner.
+- The sample seed stays out of production until it is run on purpose.
+
+### Next phase
+
+Phase 4 - Grown-up lock. Do not start until the user replies "continue".
+
+## Phase 2 - Design system and juice
+
+Status: complete.
 
 ### Built
 

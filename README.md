@@ -51,3 +51,9 @@ npx expo export --platform ios --platform android --platform web
 Delete the `dist/` folder after export. It is gitignored.
 
 Web export uses one client bundle (`web.output` is `single`). Pre-rendering each page in Node failed because `requestAnimationFrame` is missing there. The phone bundles are unchanged.
+
+## Database
+
+Schema and row level security live in `supabase/migrations`. `supabase/seed.sql` is sample catalog data for a local reset. `supabase db push` does not load that seed.
+
+This environment has one Supabase project, and it is production. On 2026-09-27 the project owner said to work on the main line and to apply schema changes there. The app still uses only the public anon key.
