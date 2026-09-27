@@ -34,14 +34,17 @@ No app code, so TypeScript, lint, Expo Doctor, tests, and export were not run.
 | Supabase env | `EXPO_PUBLIC_SUPABASE_URL` and `EXPO_PUBLIC_SUPABASE_ANON_KEY` are not set |
 | Linked Supabase project | None. `~/.supabase` has telemetry only, no project ref |
 
-DEV vs PRODUCTION: not identified. There is no Supabase CLI, no project link, and no keys.
+DEV vs PRODUCTION, from the dashboards on 2026-09-27:
+
+- PRODUCTION Supabase project ref: `uylisptwrzyqrijzxs` (GothamWhale.org, Free plan). The dashboard labels the database `main (PRODUCTION)`. GitHub integration was not enabled in the screenshot. Do not run migrations against this project unless the user types "production".
+- DEV Supabase project: still missing. A second project is required before Phase 3.
+- Vercel project `gotham-whale-org` (team johnd-1094's projects) is connected to this GitHub repo. Production deployment of `f31941c` is Ready at https://gotham-whale-org.vercel.app. No custom domain. The empty page is expected because the repo is still a README.
 
 ### Known issues
 
-- Cannot name the DEV Supabase project until the CLI is installed and a project is linked, or env values are provided.
+- There is still no DEV Supabase project. Do not enable Supabase GitHub integration while "Deploy to production" is on, because merges to `main` would change the production database.
 - EAS is installed but nobody is logged in.
-- Vercel is not installed or logged in.
-- Docker is missing, so local `supabase db reset` cannot run until both Docker and the Supabase CLI exist.
+- Supabase CLI, Vercel CLI, Docker, and GitHub CLI are still missing on this machine. The Vercel project exists in the dashboard even though the CLI is not installed locally.
 - Pull request was not opened because `gh` is not installed.
 
 ### Next phase
