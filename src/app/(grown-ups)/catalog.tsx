@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { Image, StyleSheet, Text, TextInput, View } from 'react-native';
 
 import { ChoiceList } from '@/components/choice-list';
+import { WhaleReference } from '@/components/whale-reference';
 import { InfoScreen } from '@/components/info-screen';
 import { SquishButton } from '@/components/squish-button';
 import { WhaleCard } from '@/components/whale-card';
@@ -203,6 +204,7 @@ export default function CatalogScreen() {
             </Text>
           </View>
         ))}
+        <WhaleReference />
         <Text style={styles.heading}>Add a card</Text>
         <TextInput
           accessibilityLabel="New catalog code"
