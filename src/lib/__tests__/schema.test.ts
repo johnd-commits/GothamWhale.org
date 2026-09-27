@@ -46,6 +46,21 @@ test('the public sightings view rounds coordinates and hides early reviews', () 
   expect(migration).toContain("verification_status in ('research_grade', 'published')");
 });
 
+test('deleting a child profile cascades through every child-owned table', () => {
+  for (const table of [
+    'follows',
+    'child_badges',
+    'quest_completions',
+    'ocean_dex_entries',
+    'class_members',
+  ]) {
+    const start = migration.indexOf(`create table public.${table}`);
+    const end = migration.indexOf('create table public.', start + 20);
+    const body = migration.slice(start, end === -1 ? undefined : end);
+    expect(body).toContain('references public.child_profiles (id) on delete cascade');
+  }
+});
+
 test('quest completions have no location columns', () => {
   const start = migration.indexOf('create table public.quest_completions');
   const end = migration.indexOf('create table public.whale_tales');

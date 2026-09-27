@@ -37,6 +37,7 @@ Separate areas:
 - `/observer` for adult sightings
 - `/teacher`, `/admin`, `/map`, and `/donate` open on the website. On a phone they return home.
 - /dev is the component preview. Open it from Grown-ups. It is not a kid tab.
+- Grown-ups asks for a 4-digit PIN. The account, child profiles, sound, and notices are behind that PIN.
 
 ## Checks
 

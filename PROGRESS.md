@@ -1,8 +1,46 @@
 # Tide Line progress
 
-## Phase 3 - Database schema and security
+## Phase 4 - Adult sign-up, consent, and child profiles
 
 Status: checkpoint posted. Waiting for "continue".
+
+### Built
+
+- Grown-up email sign-up and sign-in, with a plain-language privacy notice.
+- ConsentProvider interface and a placeholder that records granted consent and the time. It does not send the email anywhere.
+- Child profiles use a nickname list, an avatar list, and an age band. Kids switch profiles without an account.
+- PIN gate for grown-ups. Sound, notices, account, and delete-this-child are behind it.
+- Delete is a hard delete. The database cascades the child's follows, badges, quest completions, dex entries, and class memberships.
+
+### Files changed
+
+- `src/lib/adult-account.ts`, `src/lib/consent.ts`, `src/lib/child-records.ts`, `src/lib/pin.ts`
+- `src/app/(grown-ups)`, `src/app/(kids)/index.tsx`, `src/components`
+- `README.md`, `PROGRESS.md`
+
+### Checks
+
+- tsc: pass
+- expo lint: pass
+- expo-doctor: 21/21 pass
+- tests: 21 passed
+- export: iOS, Android, and web bundles created, then dist/ deleted
+- database: schema unchanged
+
+### Known issues
+
+- The consent step is a placeholder until a real provider is chosen.
+- The PIN is a hash of 4 digits stored only on the device.
+- Notices are an on/off setting on the device. The app does not request a push token.
+- Sign-up needs the public Supabase URL and anon key in the environment. No account was created during the browser check.
+
+### Next phase
+
+Phase 5. Do not start until the user replies "continue".
+
+## Phase 3 - Database schema and security
+
+Status: complete.
 
 ### Built
 
