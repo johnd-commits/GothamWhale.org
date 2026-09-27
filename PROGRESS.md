@@ -1,8 +1,48 @@
 # Tide Line progress
 
-## Phase 0 — Environment check and project rules
+## Phase 1 - Scaffold and navigation
 
 Status: checkpoint posted. Waiting for "continue".
+
+### Built
+
+- Expo SDK 57 app with Expo Router and TypeScript strict mode.
+- Kid tabs: Home, My Whale, Play, Calm, Badges.
+- Separate areas for grown-ups, Observer mode, and web pages (teacher, science review, public map, adopt a whale).
+- Supabase client that reads only the public URL and anon key.
+- ESLint, Prettier, and Jest. Four tests pass.
+
+### Files changed
+
+- Expo app under `src/app`, `src/components`, and `src/lib`
+- `package.json`, `package-lock.json`, `app.json`, `tsconfig.json`, `eslint.config.js`, `.prettierrc.json`
+- `README.md`, `.gitignore`, `assets/images/*`, `PROGRESS.md`
+
+### Checks
+
+- tsc: pass
+- expo lint: pass
+- expo-doctor: 21/21 pass
+- tests: 4 passed
+- export: iOS, Android, and web bundles created, then `dist/` deleted
+- database: not changed
+
+### Known issues
+
+- Web export is a single client bundle. Static pre-render crashed in Node with `requestAnimationFrame is not defined`.
+- npm warns that `react-native-worklets` 0.13, pulled in by Expo Router, does not match the optional 0.10 range of `expo-modules-core`. Expo Doctor did not fail.
+- Grown-ups is reachable from Home. The PIN lock is Phase 4. The screen has no forms and no purchase buttons.
+- Kid tabs show a default chevron until Phase 2 adds real icons.
+- This branch includes Phase 0 because that branch is not on `main` yet.
+- GitHub CLI is still missing, so the pull request was not opened.
+
+### Next phase
+
+Phase 2 - Design system and juice. Do not start until the user replies "continue".
+
+## Phase 0 — Environment check and project rules
+
+Status: complete. Phase 1 is the next checkpoint.
 
 ### Built
 

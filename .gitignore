@@ -14,6 +14,7 @@ expo-env.d.ts
 # Native build artifacts
 ios/
 android/
+.kotlin/
 *.jks
 *.p8
 *.p12
@@ -25,11 +26,15 @@ android/
 build/
 .vercel/
 *.tsbuildinfo
+coverage/
 
 # Supabase local scratch
 supabase/.temp/
 
-# Logs
+# Logs and OS files
 npm-debug.*
 yarn-debug.*
 yarn-error.*
+.metro-health-check*
+.DS_Store
+*.pem
