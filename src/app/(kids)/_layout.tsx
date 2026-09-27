@@ -1,20 +1,21 @@
 import { Tabs } from 'expo-router';
 
 import { kidTabs } from '@/lib/routes';
+import { colors, font, tapTarget } from '@/theme/tokens';
 
 export default function KidsLayout() {
   return (
     <Tabs
       screenOptions={{
         headerShown: false,
-        tabBarActiveTintColor: '#082F3A',
-        tabBarInactiveTintColor: '#3D5C66',
+        tabBarActiveTintColor: colors.deep,
+        tabBarInactiveTintColor: colors.sea,
         tabBarStyle: {
-          backgroundColor: '#E7F6F8',
-          minHeight: 64,
+          backgroundColor: colors.mist,
+          minHeight: tapTarget + 16,
         },
-        tabBarItemStyle: { minHeight: 48 },
-        tabBarLabelStyle: { fontSize: 14 },
+        tabBarItemStyle: { minHeight: tapTarget },
+        tabBarLabelStyle: { fontSize: 14, fontFamily: font.semibold },
       }}
     >
       {kidTabs.map((tab) => (

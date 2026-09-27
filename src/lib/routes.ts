@@ -12,6 +12,8 @@ export const adultRoutes = ['/grown-ups', '/observer'] as const;
 
 export const webOnlyRoutes = ['/teacher', '/admin', '/map', '/donate'] as const;
 
+export const hiddenRoutes = ['/dev'] as const;
+
 export function isKidTab(href: string): boolean {
   return kidTabs.some((tab) => tab.href === href);
 }

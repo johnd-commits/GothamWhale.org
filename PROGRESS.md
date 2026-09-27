@@ -1,8 +1,46 @@
 # Tide Line progress
 
-## Phase 1 - Scaffold and navigation
+## Phase 2 - Design system and juice
 
 Status: checkpoint posted. Waiting for "continue".
+
+### Built
+
+- Ocean palette, Nunito, spacing, and 48px tap targets.
+- SquishButton, OceanBackground, Celebration, Mascot, and WhaleCard.
+- Sound on/off saved only on the device, controlled from Grown-ups.
+- Motion follows the device reduce-motion setting.
+- Hidden component preview at `/dev`.
+
+### Files changed
+
+- `src/theme`, `src/components`, `src/app`, `src/lib`
+- `assets/sounds`, `assets/lottie`, `assets/images/sample-fluke.png`
+- `jest.setup.js`, `package.json`, `package-lock.json`, `app.json`, `README.md`, `PROGRESS.md`
+
+### Checks
+
+- tsc: pass
+- expo lint: pass
+- expo-doctor: 21/21 pass
+- tests: 8 passed
+- export: iOS, Android, and web bundles created, then `dist/` deleted
+- database: not changed
+
+### Known issues
+
+- `expo-av` is gone in SDK 57. Sound uses `expo-audio`.
+- The mascot file slot in `src/components/mascot-file.ts` is empty until the illustrator file arrives. The drawn whale shows idle, happy, thinking, and cheer. The Rive view needs a development build, not Expo Go.
+- Web export is still one client bundle.
+- There is still no dev Supabase project.
+
+### Next phase
+
+Phase 3 - Database schema and security. Do not start until the user replies "continue".
+
+## Phase 1 - Scaffold and navigation
+
+Status: complete.
 
 ### Built
 

@@ -1,6 +1,9 @@
 import { ReactNode } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
+import { OceanBackground } from '@/components/ocean-background';
+import { colors, font, space } from '@/theme/tokens';
+
 type InfoScreenProps = {
   title?: string;
   message: string;
@@ -10,6 +13,7 @@ type InfoScreenProps = {
 export function InfoScreen({ title, message, children }: InfoScreenProps) {
   return (
     <View style={styles.screen}>
+      <OceanBackground />
       {title ? (
         <Text accessibilityRole="header" style={styles.title}>
           {title}
@@ -24,21 +28,22 @@ export function InfoScreen({ title, message, children }: InfoScreenProps) {
 const styles = StyleSheet.create({
   screen: {
     flex: 1,
-    backgroundColor: '#F4FBFC',
-    padding: 24,
-    gap: 16,
+    backgroundColor: colors.foam,
+    padding: space.lg,
+    gap: space.md,
   },
   title: {
-    color: '#082F3A',
+    color: colors.ink,
+    fontFamily: font.bold,
     fontSize: 32,
-    fontWeight: '700',
   },
   message: {
-    color: '#082F3A',
+    color: colors.ink,
+    fontFamily: font.regular,
     fontSize: 20,
     lineHeight: 28,
   },
   actions: {
-    gap: 12,
+    gap: space.sm,
   },
 });

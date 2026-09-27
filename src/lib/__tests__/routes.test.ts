@@ -1,4 +1,4 @@
-import { adultRoutes, isKidTab, kidTabs, webOnlyRoutes } from '../routes';
+import { adultRoutes, hiddenRoutes, isKidTab, kidTabs, webOnlyRoutes } from '../routes';
 
 test('kids have five tabs and no adult or web routes', () => {
   expect(kidTabs.map((tab) => tab.title)).toEqual([
@@ -9,7 +9,7 @@ test('kids have five tabs and no adult or web routes', () => {
     'Badges',
   ]);
 
-  for (const href of [...adultRoutes, ...webOnlyRoutes]) {
+  for (const href of [...adultRoutes, ...webOnlyRoutes, ...hiddenRoutes]) {
     expect(isKidTab(href)).toBe(false);
   }
 });

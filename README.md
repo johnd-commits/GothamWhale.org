@@ -36,6 +36,7 @@ Separate areas:
 - `/grown-ups` for parents and teachers
 - `/observer` for adult sightings
 - `/teacher`, `/admin`, `/map`, and `/donate` open on the website. On a phone they return home.
+- /dev is the component preview. Open it from Grown-ups. It is not a kid tab.
 
 ## Checks
 
