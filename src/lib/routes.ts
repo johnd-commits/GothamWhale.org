@@ -8,7 +8,7 @@ export const kidTabs = [
 
 export type KidTabHref = (typeof kidTabs)[number]['href'];
 
-export const adultRoutes = ['/grown-ups', '/signup', '/add-child', '/delete-child', '/observer'] as const;
+export const adultRoutes = ['/grown-ups', '/signup', '/add-child', '/delete-child', '/observer', '/catalog'] as const;
 
 export const webOnlyRoutes = ['/teacher', '/admin', '/map', '/donate'] as const;
 
