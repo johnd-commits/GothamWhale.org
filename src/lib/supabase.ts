@@ -31,7 +31,7 @@ export function createSupabaseClient(config: SupabasePublicConfig): SupabaseClie
       storage: AsyncStorage,
       persistSession: true,
       autoRefreshToken: true,
-      detectSessionInUrl: false,
+      detectSessionInUrl: typeof window !== 'undefined',
     },
   });
 }

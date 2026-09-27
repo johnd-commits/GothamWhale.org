@@ -1,4 +1,5 @@
 import type { AdultAuth } from '@/lib/adult-account';
+import { emailConfirmationRedirect } from '@/lib/auth-redirect';
 import { isAgeBand, isAvatar, isNickname } from '@/lib/child-options';
 import type { ChildProfileRecord } from '@/lib/child-records';
 import type { ConsentDecision } from '@/lib/consent';
@@ -30,7 +31,14 @@ export function createSupabaseAdultAuth(): AdultAuth | null {
 
   return {
     async signUp(email, password) {
-      const { data, error } = await client.auth.signUp({ email, password });
+      const emailRedirectTo = emailConfirmationRedirect(
+        typeof window !== 'undefined' ? window.location.origin : undefined,
+      );
+      const { data, error } = await client.auth.signUp({
+        email,
+        password,
+        options: emailRedirectTo ? { emailRedirectTo } : undefined,
+      });
       return {
         userId: data.user?.id ?? null,
         hasSession: data.session !== null,
