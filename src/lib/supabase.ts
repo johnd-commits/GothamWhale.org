@@ -6,14 +6,19 @@ export type SupabasePublicConfig = {
   anonKey: string;
 };
 
-const URL_ENV = 'EXPO_PUBLIC_SUPABASE_URL';
-const ANON_ENV = 'EXPO_PUBLIC_SUPABASE_ANON_KEY';
+// Expo inlines only a direct process.env.EXPO_PUBLIC_* read. A lookup by
+// variable name stays empty in the published website.
+const publicUrl = process.env.EXPO_PUBLIC_SUPABASE_URL;
+const publicAnonKey = process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY;
 
 export function readSupabasePublicConfig(
-  env: Record<string, string | undefined> = process.env,
+  env: Record<string, string | undefined> = {
+    EXPO_PUBLIC_SUPABASE_URL: publicUrl,
+    EXPO_PUBLIC_SUPABASE_ANON_KEY: publicAnonKey,
+  },
 ): SupabasePublicConfig | null {
-  const url = env[URL_ENV]?.trim();
-  const anonKey = env[ANON_ENV]?.trim();
+  const url = env.EXPO_PUBLIC_SUPABASE_URL?.trim();
+  const anonKey = env.EXPO_PUBLIC_SUPABASE_ANON_KEY?.trim();
   if (!url || !anonKey) {
     return null;
   }
