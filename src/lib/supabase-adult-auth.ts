@@ -1,4 +1,4 @@
-import type { AdultAuth } from '@/lib/adult-account';
+import { signupIsExistingAccount, type AdultAuth } from '@/lib/adult-account';
 import { emailConfirmationRedirect } from '@/lib/auth-redirect';
 import { isAgeBand, isAvatar, isNickname } from '@/lib/child-options';
 import type { ChildProfileRecord } from '@/lib/child-records';
@@ -42,11 +42,28 @@ export function createSupabaseAdultAuth(): AdultAuth | null {
       return {
         userId: data.user?.id ?? null,
         hasSession: data.session !== null,
+        alreadyRegistered: signupIsExistingAccount(data.user?.identities),
         error: error?.message ?? null,
       };
     },
     async signIn(email, password) {
       const { data, error } = await client.auth.signInWithPassword({ email, password });
+      const notConfirmed = (error?.message ?? '').toLowerCase().includes('not confirmed');
+      if (notConfirmed) {
+        const emailRedirectTo = emailConfirmationRedirect(
+          typeof window !== 'undefined' ? window.location.origin : undefined,
+        );
+        const resent = await client.auth.resend({
+          type: 'signup',
+          email,
+          options: emailRedirectTo ? { emailRedirectTo } : undefined,
+        });
+        return {
+          userId: null,
+          error: resent.error?.message ?? null,
+          confirmationSent: resent.error === null,
+        };
+      }
       return {
         userId: data.user?.id ?? null,
         error: error?.message ?? null,

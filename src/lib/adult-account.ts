@@ -12,11 +12,16 @@ export type AdultAuth = {
   signUp: (
     email: string,
     password: string,
-  ) => Promise<{ userId: string | null; hasSession: boolean; error: string | null }>;
+  ) => Promise<{
+    userId: string | null;
+    hasSession: boolean;
+    alreadyRegistered: boolean;
+    error: string | null;
+  }>;
   signIn: (
     email: string,
     password: string,
-  ) => Promise<{ userId: string | null; error: string | null }>;
+  ) => Promise<{ userId: string | null; error: string | null; confirmationSent?: boolean }>;
   hasAdultRow: (adultId: string) => Promise<boolean>;
   insertAdult: (adultId: string, consent: ConsentDecision) => Promise<string | null>;
   listChildren: () => Promise<ChildProfileRecord[]>;
@@ -35,6 +40,10 @@ export function adultEmailOk(email: string): boolean {
 
 export function adultPasswordOk(password: string): boolean {
   return password.length >= 8;
+}
+
+export function signupIsExistingAccount(identities: readonly unknown[] | null | undefined): boolean {
+  return Array.isArray(identities) && identities.length === 0;
 }
 
 function friendlyAuthError(error: string): string {
@@ -62,6 +71,9 @@ export async function registerAdult(
   }
 
   const signedUp = await auth.signUp(input.email.trim(), input.password);
+  if (signedUp.alreadyRegistered) {
+    return { status: 'error', message: 'That email already has an account. Sign in instead.' };
+  }
   if (signedUp.error || !signedUp.userId) {
     return { status: 'error', message: friendlyAuthError(signedUp.error ?? 'signup failed') };
   }
@@ -86,7 +98,20 @@ export async function signInAdult(
   }
 
   const signedIn = await auth.signIn(input.email.trim(), input.password);
+  if (signedIn.confirmationSent) {
+    return {
+      status: 'error',
+      message: 'I sent another confirmation link. Check your inbox and spam.',
+    };
+  }
   if (signedIn.error || !signedIn.userId) {
+    const detail = signedIn.error?.toLowerCase() ?? '';
+    if (detail.includes('rate') || detail.includes('security purposes') || detail.includes('once every')) {
+      return {
+        status: 'error',
+        message: 'A confirmation email was already sent. Check your inbox and spam, then sign in.',
+      };
+    }
     return { status: 'error', message: 'That sign-in did not work.' };
   }
 

@@ -64,7 +64,7 @@ export default function SignUpScreen() {
       return;
     }
     if (result.status === 'confirm-email') {
-      setMessage('Check your email, then come back and sign in.');
+      setMessage('Look in your inbox and spam for the confirmation link. If you already opened that link, use Sign in.');
       return;
     }
     if (result.status === 'need-consent') {

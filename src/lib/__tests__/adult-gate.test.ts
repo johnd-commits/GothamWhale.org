@@ -1,4 +1,4 @@
-import { registerAdult, signInAdult, type AdultAuth } from '../adult-account';
+import { registerAdult, signInAdult, signupIsExistingAccount, type AdultAuth } from '../adult-account';
 import { chooseActiveChild, deleteChildFromSnapshot, type ChildDataSnapshot } from '../child-records';
 import { placeholderConsentProvider } from '../consent';
 import { hashPin, isFourDigitPin, pinMatches } from '../pin';
@@ -61,6 +61,46 @@ test('sign-up does not create an account until the notice is accepted', async ()
   expect(auth.signUp).not.toHaveBeenCalled();
 });
 
+test('an empty identity list means this email already has an account', () => {
+  expect(signupIsExistingAccount([])).toBe(true);
+  expect(signupIsExistingAccount([{ id: 'identity-1' }])).toBe(false);
+  expect(signupIsExistingAccount(undefined)).toBe(false);
+});
+
+test('creating an account that already exists tells the grown-up to sign in', async () => {
+  const auth = fakeAuth();
+  auth.signUp.mockResolvedValue({
+    userId: 'adult-1',
+    hasSession: false,
+    alreadyRegistered: true,
+    error: null,
+  });
+  const result = await registerAdult(auth, {
+    email: 'parent@example.com',
+    password: 'harbor-day',
+    acceptedNotice: true,
+  });
+  expect(result).toEqual({
+    status: 'error',
+    message: 'That email already has an account. Sign in instead.',
+  });
+  expect(auth.insertAdult).not.toHaveBeenCalled();
+});
+
+test('sign-in says when another confirmation link was sent', async () => {
+  const auth = fakeAuth();
+  auth.signIn.mockResolvedValue({ userId: null, error: null, confirmationSent: true });
+  const result = await signInAdult(auth, {
+    email: 'parent@example.com',
+    password: 'harbor-day',
+    acceptedNotice: true,
+  });
+  expect(result).toEqual({
+    status: 'error',
+    message: 'I sent another confirmation link. Check your inbox and spam.',
+  });
+});
+
 test('sign-up stores consent when the session is ready', async () => {
   const auth = fakeAuth();
   const result = await registerAdult(auth, {
@@ -104,10 +144,16 @@ test('kids can switch profiles without a new login', () => {
 
 function fakeAuth(options?: { hasRow?: boolean }): AdultAuth & {
   signUp: jest.Mock;
+  signIn: jest.Mock;
   insertAdult: jest.Mock;
 } {
   return {
-    signUp: jest.fn(async () => ({ userId: 'adult-1', hasSession: true, error: null })),
+    signUp: jest.fn(async () => ({
+      userId: 'adult-1',
+      hasSession: true,
+      alreadyRegistered: false,
+      error: null,
+    })),
     signIn: jest.fn(async () => ({ userId: 'adult-1', error: null })),
     hasAdultRow: jest.fn(async () => options?.hasRow ?? true),
     insertAdult: jest.fn(async () => null),
