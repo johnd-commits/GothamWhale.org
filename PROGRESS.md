@@ -27,11 +27,11 @@ Status: checkpoint posted. Waiting for "continue".
 - expo-doctor: 21/21 pass
 - tests: 12 passed
 - export: iOS, Android, and web bundles created, then dist/ deleted
-- database: production apply is blocked until the Supabase CLI has an access token
+- database: migration 20260927150000_tide_line_schema.sql applied to production on 2026-09-27. Sample seed was not loaded.
 
 ### Known issues
 
-- This shell cannot open the Supabase browser login, and no access token is set, so the migration is not on the production database yet.
+- The direct database host is IPv6-only. The migration went through the us-west-2 pooler. Browser login is still unavailable in this shell, so the project is not linked in the CLI.
 - Docker is not installed, so local `supabase db reset` cannot run the pgTAP file.
 - Scientist and admin roles cannot be chosen at signup. Those rows are created by the database owner.
 - The sample seed stays out of production until it is run on purpose.
