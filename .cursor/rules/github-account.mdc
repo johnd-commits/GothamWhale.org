@@ -1,0 +1,10 @@
+---
+description: Use the johnd-commits GitHub account for every GitHub action
+alwaysApply: true
+---
+
+# GitHub account
+
+Use the GitHub account `johnd-commits` for every GitHub action in this project. The repository is `johnd-commits/GothamWhale.org`.
+
+Do not look for, switch to, or suggest another GitHub login.
