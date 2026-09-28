@@ -1,4 +1,11 @@
-import { registerAdult, signInAdult, signupIsExistingAccount, type AdultAuth } from '../adult-account';
+import {
+  registerAdult,
+  saveNewPassword,
+  sendPasswordReset,
+  signInAdult,
+  signupIsExistingAccount,
+  type AdultAuth,
+} from '../adult-account';
 import { chooseActiveChild, deleteChildFromSnapshot, type ChildDataSnapshot } from '../child-records';
 import { placeholderConsentProvider } from '../consent';
 import { hashPin, isFourDigitPin, pinMatches } from '../pin';
@@ -101,6 +108,50 @@ test('sign-in says when another confirmation link was sent', async () => {
   });
 });
 
+test('create account asks for the same password twice', async () => {
+  const auth = fakeAuth();
+  const result = await registerAdult(auth, {
+    email: 'parent@example.com',
+    password: 'harbor-day',
+    passwordAgain: 'harbor-night',
+    acceptedNotice: true,
+  });
+  expect(result).toEqual({
+    status: 'error',
+    message: 'Enter the same password in both boxes.',
+  });
+  expect(auth.signUp).not.toHaveBeenCalled();
+});
+
+test('a password that does not match points to reset', async () => {
+  const auth = fakeAuth();
+  auth.signIn.mockResolvedValue({ userId: null, error: 'Invalid login credentials' });
+  const result = await signInAdult(auth, {
+    email: 'parent@example.com',
+    password: 'harbor-day',
+    acceptedNotice: true,
+  });
+  expect(result).toEqual({
+    status: 'error',
+    message: 'That email and password do not match. Use Forgot password to set a new one.',
+  });
+});
+
+test('password reset needs a real email and a matching new password', async () => {
+  const auth = fakeAuth();
+  await expect(sendPasswordReset(auth, 'not-an-email')).resolves.toEqual({
+    status: 'error',
+    message: 'Use the email for this account.',
+  });
+  expect(auth.requestPasswordReset).not.toHaveBeenCalled();
+  await expect(saveNewPassword(auth, 'harbor-day', 'harbor-night')).resolves.toEqual({
+    status: 'error',
+    message: 'Enter the same password in both boxes.',
+  });
+  expect(auth.updatePassword).not.toHaveBeenCalled();
+  await expect(saveNewPassword(auth, 'harbor-day', 'harbor-day')).resolves.toEqual({ status: 'saved' });
+});
+
 test('sign-up stores consent when the session is ready', async () => {
   const auth = fakeAuth();
   const result = await registerAdult(auth, {
@@ -146,6 +197,8 @@ function fakeAuth(options?: { hasRow?: boolean }): AdultAuth & {
   signUp: jest.Mock;
   signIn: jest.Mock;
   insertAdult: jest.Mock;
+  requestPasswordReset: jest.Mock;
+  updatePassword: jest.Mock;
 } {
   return {
     signUp: jest.fn(async () => ({
@@ -155,6 +208,8 @@ function fakeAuth(options?: { hasRow?: boolean }): AdultAuth & {
       error: null,
     })),
     signIn: jest.fn(async () => ({ userId: 'adult-1', error: null })),
+    requestPasswordReset: jest.fn(async () => ({ error: null })),
+    updatePassword: jest.fn(async () => ({ error: null })),
     hasAdultRow: jest.fn(async () => options?.hasRow ?? true),
     insertAdult: jest.fn(async () => null),
     listChildren: jest.fn(async () => []),

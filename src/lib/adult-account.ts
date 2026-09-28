@@ -22,6 +22,8 @@ export type AdultAuth = {
     email: string,
     password: string,
   ) => Promise<{ userId: string | null; error: string | null; confirmationSent?: boolean }>;
+  requestPasswordReset: (email: string) => Promise<{ error: string | null }>;
+  updatePassword: (password: string) => Promise<{ error: string | null }>;
   hasAdultRow: (adultId: string) => Promise<boolean>;
   insertAdult: (adultId: string, consent: ConsentDecision) => Promise<string | null>;
   listChildren: () => Promise<ChildProfileRecord[]>;
@@ -55,7 +57,7 @@ function friendlyAuthError(error: string): string {
 
 export async function registerAdult(
   auth: AdultAuth,
-  input: { email: string; password: string; acceptedNotice: boolean },
+  input: { email: string; password: string; passwordAgain?: string; acceptedNotice: boolean },
   consent: ConsentProvider = placeholderConsentProvider,
 ): Promise<AdultSession> {
   if (!input.acceptedNotice) {
@@ -63,6 +65,9 @@ export async function registerAdult(
   }
   if (!adultEmailOk(input.email) || !adultPasswordOk(input.password)) {
     return { status: 'error', message: 'Use a real email and at least 8 characters.' };
+  }
+  if (input.passwordAgain !== undefined && input.password !== input.passwordAgain) {
+    return { status: 'error', message: 'Enter the same password in both boxes.' };
   }
 
   const decision = await consent.requestConsent(true);
@@ -112,7 +117,10 @@ export async function signInAdult(
         message: 'A confirmation email was already sent. Check your inbox and spam, then sign in.',
       };
     }
-    return { status: 'error', message: 'That sign-in did not work.' };
+    return {
+      status: 'error',
+      message: 'That email and password do not match. Use Forgot password to set a new one.',
+    };
   }
 
   if (await auth.hasAdultRow(signedIn.userId)) {
@@ -128,6 +136,38 @@ export async function signInAdult(
     return { status: 'error', message: 'Consent was not saved.' };
   }
   return { status: 'ready', adultId: signedIn.userId };
+}
+
+export async function sendPasswordReset(
+  auth: AdultAuth,
+  email: string,
+): Promise<{ status: 'sent' } | { status: 'error'; message: string }> {
+  if (!adultEmailOk(email)) {
+    return { status: 'error', message: 'Use the email for this account.' };
+  }
+  const result = await auth.requestPasswordReset(email.trim());
+  if (result.error) {
+    return { status: 'error', message: 'The reset email could not be sent. Try again in a few minutes.' };
+  }
+  return { status: 'sent' };
+}
+
+export async function saveNewPassword(
+  auth: AdultAuth,
+  password: string,
+  passwordAgain: string,
+): Promise<{ status: 'saved' } | { status: 'error'; message: string }> {
+  if (!adultPasswordOk(password)) {
+    return { status: 'error', message: 'Use at least 8 characters.' };
+  }
+  if (password !== passwordAgain) {
+    return { status: 'error', message: 'Enter the same password in both boxes.' };
+  }
+  const result = await auth.updatePassword(password);
+  if (result.error) {
+    return { status: 'error', message: 'The new password was not saved. Open the reset link again.' };
+  }
+  return { status: 'saved' };
 }
 
 export async function createChildProfile(

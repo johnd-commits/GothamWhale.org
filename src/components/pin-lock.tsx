@@ -1,22 +1,30 @@
+import { useRouter } from 'expo-router';
 import { useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { InfoScreen } from '@/components/info-screen';
+import { SquishButton } from '@/components/squish-button';
 import { hashPin, pinMatches } from '@/lib/pin';
 import { usePinGate } from '@/lib/pin-gate';
 import { colors, font, radius, tapTarget } from '@/theme/tokens';
 
 const digits = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '0'] as const;
 
-export function PinLock() {
+const choosePinMessage =
+  'Choose 4 numbers for this browser. This lock is not your password. Tide Line does not have a PIN until you pick one.';
+const enterPinMessage =
+  'Enter the 4 numbers you chose on this browser. This is not your account password.';
+
+export function PinLock({ replacing = false }: { replacing?: boolean }) {
   const pinHash = usePinGate((state) => state.pinHash);
   const setPinHash = usePinGate((state) => state.setPinHash);
   const unlock = usePinGate((state) => state.unlock);
+  const requestPinReset = usePinGate((state) => state.requestPinReset);
+  const choosing = replacing || !pinHash;
+  const router = useRouter();
   const [entry, setEntry] = useState('');
   const [firstPin, setFirstPin] = useState<string | null>(null);
-  const [message, setMessage] = useState(
-    pinHash ? 'Enter the grown-up PIN.' : 'Choose a 4-digit PIN for grown-ups.',
-  );
+  const [message, setMessage] = useState(choosing ? choosePinMessage : enterPinMessage);
 
   function pushDigit(digit: string) {
     const next = `${entry}${digit}`.slice(0, 4);
@@ -24,7 +32,7 @@ export function PinLock() {
     if (next.length < 4) {
       return;
     }
-    if (!pinHash) {
+    if (choosing) {
       if (!firstPin) {
         setFirstPin(next);
         setEntry('');
@@ -46,7 +54,7 @@ export function PinLock() {
       setPinHash(hashed);
       return;
     }
-    if (pinMatches(next, pinHash)) {
+    if (pinHash && pinMatches(next, pinHash)) {
       unlock();
       return;
     }
@@ -80,6 +88,16 @@ export function PinLock() {
           <Text style={styles.keyLabel}>Clear</Text>
         </Pressable>
       </View>
+      {choosing ? null : (
+        <SquishButton
+          label="I forgot this PIN"
+          sound={false}
+          onPress={() => {
+            requestPinReset();
+            router.push('/signup');
+          }}
+        />
+      )}
     </InfoScreen>
   );
 }

@@ -1,5 +1,5 @@
 import { signupIsExistingAccount, type AdultAuth } from '@/lib/adult-account';
-import { emailConfirmationRedirect } from '@/lib/auth-redirect';
+import { currentAuthReturn } from '@/lib/auth-redirect';
 import { isAgeBand, isAvatar, isNickname } from '@/lib/child-options';
 import type { ChildProfileRecord } from '@/lib/child-records';
 import type { ConsentDecision } from '@/lib/consent';
@@ -31,9 +31,7 @@ export function createSupabaseAdultAuth(): AdultAuth | null {
 
   return {
     async signUp(email, password) {
-      const emailRedirectTo = emailConfirmationRedirect(
-        typeof window !== 'undefined' ? window.location.origin : undefined,
-      );
+      const emailRedirectTo = currentAuthReturn('/signup');
       const { data, error } = await client.auth.signUp({
         email,
         password,
@@ -50,9 +48,7 @@ export function createSupabaseAdultAuth(): AdultAuth | null {
       const { data, error } = await client.auth.signInWithPassword({ email, password });
       const notConfirmed = (error?.message ?? '').toLowerCase().includes('not confirmed');
       if (notConfirmed) {
-        const emailRedirectTo = emailConfirmationRedirect(
-          typeof window !== 'undefined' ? window.location.origin : undefined,
-        );
+        const emailRedirectTo = currentAuthReturn('/signup');
         const resent = await client.auth.resend({
           type: 'signup',
           email,
@@ -68,6 +64,18 @@ export function createSupabaseAdultAuth(): AdultAuth | null {
         userId: data.user?.id ?? null,
         error: error?.message ?? null,
       };
+    },
+    async requestPasswordReset(email) {
+      const redirectTo = currentAuthReturn('/reset-password');
+      const { error } = await client.auth.resetPasswordForEmail(
+        email,
+        redirectTo ? { redirectTo } : undefined,
+      );
+      return { error: error?.message ?? null };
+    },
+    async updatePassword(password) {
+      const { error } = await client.auth.updateUser({ password });
+      return { error: error?.message ?? null };
     },
     async hasAdultRow(adultId) {
       const { data, error } = await client.from('adults').select('id').eq('id', adultId).maybeSingle();
