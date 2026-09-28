@@ -1,10 +1,12 @@
 import { Stack, useRouter } from 'expo-router';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { StyleSheet, Text, TextInput } from 'react-native';
 
+import { BigLink } from '@/components/big-link';
 import { InfoScreen } from '@/components/info-screen';
 import { SquishButton } from '@/components/squish-button';
 import { registerAdult, sendPasswordReset, signInAdult } from '@/lib/adult-account';
+import { noteAdultSession } from '@/lib/adult-session';
 import { placeholderConsentProvider, privacyNotice } from '@/lib/consent';
 import { usePinGate } from '@/lib/pin-gate';
 import { getSupabaseClient } from '@/lib/supabase';
@@ -21,8 +23,15 @@ export default function SignUpScreen() {
   const [password, setPassword] = useState('');
   const [passwordAgain, setPasswordAgain] = useState('');
   const [message, setMessage] = useState(signInIntro);
+  const [signedInHere, setSignedInHere] = useState(false);
   const auth = createSupabaseAdultAuth();
-  const forgotDevicePin = usePinGate((state) => state.forgotDevicePin);
+  const unlock = usePinGate((state) => state.unlock);
+
+  const openGrownUpMenu = useCallback(() => {
+    noteAdultSession(true);
+    unlock();
+    router.replace('/grown-ups');
+  }, [router, unlock]);
 
   useEffect(() => {
     let cancelled = false;
@@ -41,11 +50,8 @@ export default function SignUpScreen() {
         if (cancelled) {
           return;
         }
-        if (forgotDevicePin) {
-          router.replace('/grown-ups');
-          return;
-        }
-        setMessage('Signed in. You can add a child profile.');
+        setSignedInHere(true);
+        openGrownUpMenu();
         return;
       }
       const decision = await placeholderConsentProvider.requestConsent(true);
@@ -53,16 +59,20 @@ export default function SignUpScreen() {
         return;
       }
       const error = await sessionAuth.insertAdult(adultId, decision);
-      if (!cancelled) {
-        setMessage(
-          error ? 'Consent was not saved.' : 'Your email is confirmed. You can add a child profile.',
-        );
+      if (cancelled) {
+        return;
       }
+      if (error) {
+        setMessage('Consent was not saved.');
+        return;
+      }
+      setSignedInHere(true);
+      openGrownUpMenu();
     })();
     return () => {
       cancelled = true;
     };
-  }, [forgotDevicePin, router]);
+  }, [openGrownUpMenu]);
 
   function showMode(next: 'sign-in' | 'create' | 'forgot') {
     setMode(next);
@@ -93,7 +103,8 @@ export default function SignUpScreen() {
       acceptedNotice: true,
     });
     if (result.status === 'ready') {
-      router.replace('/grown-ups');
+      setSignedInHere(true);
+      openGrownUpMenu();
       return;
     }
     if (result.status === 'confirm-email') {
@@ -118,7 +129,8 @@ export default function SignUpScreen() {
     }
     const result = await signInAdult(auth, { email, password, acceptedNotice: true });
     if (result.status === 'ready') {
-      router.replace('/grown-ups');
+      setSignedInHere(true);
+      openGrownUpMenu();
       return;
     }
     if (result.status === 'error') {
@@ -146,7 +158,15 @@ export default function SignUpScreen() {
   return (
     <>
       <Stack.Screen options={{ title: 'Grown-up account' }} />
-      <InfoScreen title="Grown-up account" message={message} scroll>
+      <InfoScreen title="Grown-up account" message={signedInHere ? 'Signed in.' : message} scroll>
+        {signedInHere ? (
+          <>
+            <BigLink href="/add-child" label="Add a child" />
+            <BigLink href="/grown-ups" label="Grown-up menu" />
+          </>
+        ) : null}
+        {signedInHere ? null : (
+        <>
         <Text style={styles.label}>Email</Text>
         <TextInput
           accessibilityLabel="Email"
@@ -200,6 +220,8 @@ export default function SignUpScreen() {
             <SquishButton label="Back to sign in" sound={false} onPress={() => showMode('sign-in')} />
           </>
         ) : null}
+        </>
+        )}
       </InfoScreen>
     </>
   );

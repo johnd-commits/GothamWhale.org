@@ -2,10 +2,12 @@ import { Stack } from 'expo-router';
 import { useState } from 'react';
 import { StyleSheet, Text } from 'react-native';
 
+import { BigLink } from '@/components/big-link';
 import { ChoiceList } from '@/components/choice-list';
 import { InfoScreen } from '@/components/info-screen';
 import { SquishButton } from '@/components/squish-button';
 import { createChildProfile } from '@/lib/adult-account';
+import { noteAdultSession } from '@/lib/adult-session';
 import { ageBands, avatars, nicknames } from '@/lib/child-options';
 import { createSupabaseAdultAuth } from '@/lib/supabase-adult-auth';
 import { getSupabaseClient } from '@/lib/supabase';
@@ -28,11 +30,16 @@ export default function AddChildScreen() {
       return;
     }
     const { data } = await client.auth.getSession();
-    const adultId = data.session?.user.id;
+    let adultId = data.session?.user.id ?? null;
     if (!adultId) {
-      setMessage('Sign in on the grown-up account screen first.');
+      const user = await client.auth.getUser();
+      adultId = user.data.user?.id ?? null;
+    }
+    if (!adultId) {
+      setMessage('The grown-up email sign-in did not stay on. Use Grown-up account, then come back.');
       return;
     }
+    noteAdultSession(true);
     if (!nickname || !avatar || !ageBand) {
       setMessage('Pick a nickname, an avatar, and an age band.');
       return;
@@ -55,6 +62,7 @@ export default function AddChildScreen() {
         <ChoiceList label="Age band" options={ageBands} value={ageBand} onChange={setAgeBand} />
         <Text style={styles.result}>{message}</Text>
         <SquishButton label="Save this profile" onPress={() => void saveProfile()} />
+        <BigLink href="/grown-ups" label="Grown-up menu" />
       </InfoScreen>
     </>
   );

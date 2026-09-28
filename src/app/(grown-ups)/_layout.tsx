@@ -1,7 +1,8 @@
-import { useEffect, useState, useSyncExternalStore } from 'react';
+import { useEffect, useSyncExternalStore } from 'react';
 import { Redirect, Stack, usePathname } from 'expo-router';
 
 import { PinLock } from '@/components/pin-lock';
+import { adultSessionSnapshot, noteAdultSession, subscribeAdultSession } from '@/lib/adult-session';
 import { usePinGate } from '@/lib/pin-gate';
 import { isAccountRoute } from '@/lib/routes';
 import { getSupabaseClient } from '@/lib/supabase';
@@ -21,8 +22,7 @@ export default function GrownUpsLayout() {
   const forgotDevicePin = usePinGate((state) => state.forgotDevicePin);
   const lock = usePinGate((state) => state.lock);
   const hydrated = usePinHydrated();
-  const [sessionReady, setSessionReady] = useState(false);
-  const [signedIn, setSignedIn] = useState(false);
+  const session = useSyncExternalStore(subscribeAdultSession, adultSessionSnapshot, adultSessionSnapshot);
 
   useEffect(() => {
     return () => {
@@ -33,23 +33,22 @@ export default function GrownUpsLayout() {
   useEffect(() => {
     const client = getSupabaseClient();
     if (!client) {
-      setSessionReady(true);
+      noteAdultSession(false);
       return;
     }
-    const { data } = client.auth.onAuthStateChange((_event, session) => {
-      setSignedIn(session !== null);
-      setSessionReady(true);
+    const { data } = client.auth.onAuthStateChange((_event, next) => {
+      noteAdultSession(next !== null);
     });
     return () => {
       data.subscription.unsubscribe();
     };
   }, []);
 
-  if (!hydrated || !sessionReady) {
+  if (!hydrated || !session.ready) {
     return null;
   }
 
-  if (!isAccountRoute(pathname) && !signedIn) {
+  if (!isAccountRoute(pathname) && !session.signedIn) {
     return <Redirect href="/signup" />;
   }
 
